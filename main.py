@@ -3,6 +3,7 @@ from constants import *
 from player import *
 from asteroid import *
 from asteroidfield import *
+from shot import *
 
 def main():
     print("Starting asteroids!")
@@ -22,8 +23,11 @@ def main():
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
+    Player.containers = (updatable, drawable)
     Player.containers = (updatable, drawable)
     Asteroid.containers = (asteroids, updatable, drawable)
+    Shot.containers = (shots, updatable, drawable)
     AsteroidField.containers = (updatable)
 
     field = AsteroidField()
@@ -36,14 +40,32 @@ def main():
                 running = False
 
         # fill the screen with black to wipe away anything from last frame
-        screen.fill("black")
+        screen.fill(COLOR_BG)
 
-        # RENDER YOUR GAME HERE
+        # Update the updateables passing the passed time since last loop (delta time)
         for thing in updatable:
             thing.update(dt)
 
+        # check collision with asteroids -> game over..
+        for asteroid in asteroids:
+            killed = False
+            for s in shots:
+                if asteroid.check_collision(s): # asteroid was hit by shot
+                    s.kill()
+                    asteroid.split()
+                    killed = True
+                    break
+
+            if not killed and asteroid.check_collision(player):
+                print("Game over!")
+                running = False
+
+
+
+        # draws the drawable things onto the screen
         for thing in drawable:
             thing.draw(screen)
+
 
         # flip() the display to put your work on screen
         pygame.display.flip()
