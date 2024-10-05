@@ -4,6 +4,7 @@ from player import *
 from asteroid import *
 from asteroidfield import *
 from shot import *
+from explosion import *
 
 def main():
     print("Starting asteroids!")
@@ -28,10 +29,13 @@ def main():
     Player.containers = (updatable, drawable)
     Asteroid.containers = (asteroids, updatable, drawable)
     Shot.containers = (shots, updatable, drawable)
+    Explosion.containers = (updatable, drawable)
     AsteroidField.containers = (updatable)
 
     field = AsteroidField()
     player = Player(x, y)
+
+    font = pygame.font.SysFont(None, 24)
 
     while running:
         # poll for events
@@ -51,6 +55,8 @@ def main():
             killed = False
             for s in shots:
                 if asteroid.check_collision(s): # asteroid was hit by shot
+                    score = max(ASTEROID_KINDS - (asteroid.radius // ASTEROID_MIN_RADIUS), 0) + 1
+                    player.add_score(score*10)
                     s.kill()
                     asteroid.split()
                     killed = True
@@ -58,6 +64,7 @@ def main():
 
             if not killed and asteroid.check_collision(player):
                 print("Game over!")
+                print(f"Score: {player.score}")
                 running = False
 
 
@@ -66,6 +73,10 @@ def main():
         for thing in drawable:
             thing.draw(screen)
 
+        # draw score
+        
+        img = font.render(f"Score: {player.score}", True, "#fef08a")
+        screen.blit(img, (20, 20))
 
         # flip() the display to put your work on screen
         pygame.display.flip()
