@@ -13,7 +13,7 @@ class Explosion(CircleShape):
         pygame.draw.circle(surface, self.color, self.position, self.radius, 2)    
 
     def update(self, dt: float):
-        self.ttl = max(0, self.ttl - dt)
+        self.ttl -= dt
         if self.ttl <= 0:
             self.kill()
             return

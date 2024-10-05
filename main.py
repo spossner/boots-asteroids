@@ -25,14 +25,14 @@ def main():
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
-    Player.containers = (updatable, drawable)
-    Player.containers = (updatable, drawable)
-    Asteroid.containers = (asteroids, updatable, drawable)
+    wrappable = pygame.sprite.Group()
+    Player.containers = (updatable, drawable, wrappable)
+    Asteroid.containers = (asteroids, updatable, drawable, wrappable)
     Shot.containers = (shots, updatable, drawable)
     Explosion.containers = (updatable, drawable)
     AsteroidField.containers = (updatable)
 
-    field = AsteroidField()
+    AsteroidField()
     player = Player(x, y)
 
     font = pygame.font.SysFont(None, 24)
@@ -49,6 +49,10 @@ def main():
         # Update the updateables passing the passed time since last loop (delta time)
         for thing in updatable:
             thing.update(dt)
+
+        # Wrap around things leaving the screen
+        for thing in wrappable:
+            thing.check_wrap_around()
 
         # check collision with asteroids -> game over..
         for asteroid in asteroids:
